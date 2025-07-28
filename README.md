@@ -396,3 +396,7 @@ For issues related to:
 - **Weaviate**: [Weaviate Documentation](https://weaviate.io/developers/weaviate)
 - **OpenAI**: [OpenAI Documentation](https://platform.openai.com/docs)
 - **This Script**: Check logs and error messages for troubleshooting
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
