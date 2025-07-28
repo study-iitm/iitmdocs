@@ -1,0 +1,1 @@
+# [Non Academic Rules](https://docs.google.com/document/u/1/d/1N5ZmPJZUDHznjt6G_ZiRS1baG_WpOfJM-oFnvWve76Y/pub)

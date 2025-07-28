@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iframe Test - Academic Document Search</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .iframe-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 800px;
+            border: none;
+            display: block;
+        }
+        
+        .info {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .info h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .info ul {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .info li {
+            margin-bottom: 8px;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-left: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎓 Academic Document Search - Iframe Demo</h1>
+        
+        <div class="iframe-container">
+            <iframe src="search.html" title="Academic Document Search Interface"></iframe>
+        </div>
+        
+        <div class="info">
+            <h2>🔧 Integration Information</h2>
+            <ul>
+                <li><strong>Iframe Support:</strong> The search interface is fully optimized for iframe embedding <span class="badge">✓ Responsive</span></li>
+                <li><strong>CORS Ready:</strong> Configured with proper headers for cross-origin requests <span class="badge">✓ Secure</span></li>
+                <li><strong>API Integration:</strong> Direct connection to Weaviate Cloud cluster <span class="badge">✓ Live Data</span></li>
+                <li><strong>Mobile Friendly:</strong> Responsive design works on all screen sizes <span class="badge">✓ Mobile</span></li>
+                <li><strong>Real-time Search:</strong> Instant semantic search results <span class="badge">✓ Fast</span></li>
+            </ul>
+            
+            <h2>📝 Usage Instructions</h2>
+            <ul>
+                <li>The API key is already pre-filled for demonstration purposes</li>
+                <li>Try searching for terms like: "admission requirements", "course registration", "learning paths"</li>
+                <li>Results show relevance scores and content previews with highlighted search terms</li>
+                <li>All 25 academic documents are searchable using AI-powered semantic search</li>
+            </ul>
+            
+            <h2>🚀 Embedding in Your Site</h2>
+            <p>To embed this search interface in your website, use:</p>
+            <pre style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 10px; overflow-x: auto;"><code>&lt;iframe src="http://your-domain.com/search.html" 
+        width="100%" 
+        height="800" 
+        frameborder="0"
+        title="Academic Document Search"&gt;&lt;/iframe&gt;</code></pre>
+        </div>
+    </div>
+</body>
+</html>
