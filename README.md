@@ -12,7 +12,7 @@ The embedding system processes 25 markdown files containing academic program doc
 ├── src/                          # Source documents to embed (25 .md files)
 ├── embed_files.py               # Main embedding script (with inline dependencies for uv)
 ├── run_tests.py                # Test runner for search quality validation
-├── weaviate-search.js          # Frontend JavaScript API client
+├── weaviate-search.js          # Concise frontend search client (114 lines)
 ├── search.html                 # Web search interface (iframe-ready)
 ├── iframe-test.html            # Demo page showing iframe integration
 ├── serve.py                    # HTTP server for local development
@@ -231,6 +231,8 @@ response = collection.query.hybrid(
 - ✅ **OpenAI Integration**: Uses latest text-embedding-3-small model
 - ✅ **Environment Configuration**: Flexible credential management
 - ✅ **uv Support**: PEP 723 inline dependencies for modern Python tooling
+- ✅ **Full Document View**: Expandable previews with complete document content
+- ✅ **Concise Codebase**: Optimized JavaScript client (114 lines)
 
 ## Troubleshooting
 
@@ -323,7 +325,10 @@ A complete web interface is included for searching the embedded documents:
 ### 🌐 **Running the Web Interface**
 
 ```bash
-# Serve the files with Python's built-in server
+# Option 1: Use included development server
+python3 serve.py
+
+# Option 2: Use Python's built-in server
 python3 -m http.server 8000
 
 # Open in browser: http://localhost:8000/search.html
@@ -335,7 +340,7 @@ python3 -m http.server 8000
 - **📱 Responsive Design**: Works on desktop, tablet, and mobile devices  
 - **🖼️ Iframe Ready**: Optimized for embedding in other websites
 - **⚡ Real-time Results**: Instant search with relevance scoring
-- **🎨 Modern UI**: Beautiful gradient design with smooth animations
+- **🎨 Professional UI**: Clean Bootstrap-only design with full document preview
 - **💾 Local Storage**: API keys stored securely in browser
 
 ### 🔧 **API Requirements**
@@ -368,11 +373,8 @@ You can also use the JavaScript client directly:
 // Include the library
 <script src="weaviate-search.js"></script>
 
-// Initialize and search
-const searcher = new WeaviateSearch({
-    baseUrl: 'https://your-cluster.weaviate.network'
-});
-
+// Initialize and search (concise API)
+const searcher = new WeaviateSearch();
 searcher.setCredentials('your-weaviate-key');
 searcher.setOpenAIKey('your-openai-key');
 
