@@ -104,7 +104,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="weaviate-search.js"></script>
-    <script>
+    <script type="module">
+        import { marked } from "https://cdn.jsdelivr.net/npm/marked@13/+esm";
+        
         class SearchInterface {
             constructor() {
                 this.weaviateSearch = new WeaviateSearch({
@@ -243,7 +245,7 @@
                                     <h6 class="text-dark mb-3">
                                         <i class="bi bi-file-text me-2"></i>Complete Document Content
                                     </h6>
-                                    <div class="text-dark" style="white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 0.9em; line-height: 1.4;">${this.escapeHtml(doc.content)}</div>
+                                    <div class="text-dark">${this.renderMarkdown(doc.content)}</div>
                                 </div>
                             </div>
                         </div>
@@ -319,6 +321,15 @@
                     button.innerHTML = '<i class="bi bi-eye-slash me-1"></i>Hide Full Document';
                     button.classList.remove('btn-outline-secondary');
                     button.classList.add('btn-secondary');
+                }
+            }
+
+            renderMarkdown(content) {
+                if (!content) return '';
+                try {
+                    return marked.parse(content);
+                } catch (error) {
+                    return this.escapeHtml(content);
                 }
             }
 
