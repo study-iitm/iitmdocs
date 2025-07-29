@@ -132,8 +132,6 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ q: question, ndocs: 5 })
                 })) {
-                    console.log('AsyncLLM event:', { content, message });
-
                     // Use the raw message delta content instead of accumulated content
                     const deltaContent = message?.choices?.[0]?.delta?.content;
 
@@ -155,10 +153,9 @@
                                     answerStarted = true;
                                 }
                                 answerBuffer += data.text;
-                                console.log('Answer buffer:', answerBuffer);
                                 // Display as markdown
                                 const answerText = document.getElementById('answerText');
-                                answerText.innerHTML = marked.parse(answerBuffer);
+                                answerText.innerHTML = marked.parse(answerBuffer.replace(/<[^>]*>?/g, ''));
                             }
                         } catch (e) {
                             console.error('JSON parse error:', e, 'Delta content:', deltaContent);
