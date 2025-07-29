@@ -4,7 +4,7 @@
 .env.development.local
 .env.test.local
 .env.production.local
-
+.*
 # Python
 __pycache__/
 *.py[cod]
@@ -46,3 +46,5 @@ Thumbs.db
 
 # Temporary files
 task.md
+
+.dev.vars*
