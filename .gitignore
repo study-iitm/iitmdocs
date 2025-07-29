@@ -48,3 +48,5 @@ Thumbs.db
 task.md
 
 .dev.vars*
+
+node_modules/
