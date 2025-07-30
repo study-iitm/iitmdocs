@@ -5,8 +5,28 @@
 
 export default {
   async fetch(request, env, ctx) {
+    const startTime = Date.now();
+    const requestId = crypto.randomUUID();
+    
+    // Log incoming request
+    console.log({
+      event: "request_start",
+      request_id: requestId,
+      timestamp: new Date().toISOString(),
+      method: request.method,
+      url: request.url,
+      user_agent: request.headers.get('User-Agent'),
+      cf_country: request.cf?.country,
+      cf_colo: request.cf?.colo
+    });
+
     // Handle CORS preflight
     if (request.method === 'OPTIONS') {
+      console.log({
+        event: "cors_preflight",
+        request_id: requestId,
+        timestamp: new Date().toISOString()
+      });
       return new Response(null, {
         status: 200,
         headers: {
@@ -21,20 +41,57 @@ export default {
     // Only handle POST /answer
     const url = new URL(request.url);
     if (request.method !== 'POST' || url.pathname !== '/answer') {
+      console.log({
+        event: "invalid_request",
+        request_id: requestId,
+        timestamp: new Date().toISOString(),
+        method: request.method,
+        pathname: url.pathname,
+        status: 404
+      });
       return new Response('Not Found', { status: 404 });
     }
 
     try {
       const { q: question, ndocs = 5 } = await request.json();
       if (!question) {
+        console.log({
+          event: "missing_question",
+          request_id: requestId,
+          timestamp: new Date().toISOString(),
+          status: 400
+        });
         return new Response('Missing "q" parameter', { status: 400 });
       }
+
+      console.log({
+        event: "search_start",
+        request_id: requestId,
+        timestamp: new Date().toISOString(),
+        question: question.substring(0, 200),
+        ndocs: ndocs
+      });
 
       const stream = new ReadableStream({
         async start(controller) {
           try {
             // Search Weaviate for relevant documents
-            const documents = await searchWeaviate(question, ndocs, env);
+            const searchStartTime = Date.now();
+            const documents = await searchWeaviate(question, ndocs, env, requestId);
+            const searchDuration = Date.now() - searchStartTime;
+
+            console.log({
+              event: "search_complete",
+              request_id: requestId,
+              timestamp: new Date().toISOString(),
+              documents_found: documents.length,
+              search_duration_ms: searchDuration,
+              documents: documents.map(doc => ({
+                filename: doc.filename,
+                relevance: doc.relevance,
+                content_preview: doc.content.substring(0, 300) + (doc.content.length > 300 ? '...' : '')
+              }))
+            });
 
             // Stream documents first as OpenAI-style chunks
             for (const doc of documents) {
@@ -61,7 +118,16 @@ export default {
             }
 
             // Generate AI answer using documents as context
-            await generateAnswer(question, documents, controller, env);
+            const answerStartTime = Date.now();
+            await generateAnswer(question, documents, controller, env, requestId);
+            const answerDuration = Date.now() - answerStartTime;
+
+            console.log({
+              event: "answer_complete",
+              request_id: requestId,
+              timestamp: new Date().toISOString(),
+              answer_duration_ms: answerDuration
+            });
 
             // Send final chunk
             const finalChunk = {
@@ -78,9 +144,24 @@ export default {
             controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(finalChunk)}\n\n`));
             controller.enqueue(new TextEncoder().encode(`data: [DONE]\n\n`));
 
+            const totalDuration = Date.now() - startTime;
+            console.log({
+              event: "request_complete",
+              request_id: requestId,
+              timestamp: new Date().toISOString(),
+              total_duration_ms: totalDuration,
+              status: "success"
+            });
+
             controller.close();
           } catch (error) {
-            console.error('Stream error:', error);
+            console.log({
+              event: "stream_error",
+              request_id: requestId,
+              timestamp: new Date().toISOString(),
+              error: error.message,
+              stack: error.stack
+            });
             controller.error(error);
           }
         }
@@ -96,13 +177,30 @@ export default {
       });
 
     } catch (error) {
-      console.error('Request error:', error);
+      const totalDuration = Date.now() - startTime;
+      console.log({
+        event: "request_error",
+        request_id: requestId,
+        timestamp: new Date().toISOString(),
+        error: error.message,
+        stack: error.stack,
+        total_duration_ms: totalDuration,
+        status: 500
+      });
       return new Response('Internal Server Error', { status: 500 });
     }
   }
 };
 
-async function searchWeaviate(query, limit, env) {
+async function searchWeaviate(query, limit, env, requestId) {
+  console.log({
+    event: "weaviate_search_start",
+    request_id: requestId,
+    timestamp: new Date().toISOString(),
+    query: query.substring(0, 100),
+    limit: limit
+  });
+
   const response = await fetch(`${env.WEAVIATE_URL}/v1/graphql`, {
     method: 'POST',
     headers: {
@@ -125,10 +223,23 @@ async function searchWeaviate(query, limit, env) {
   const data = await response.json();
 
   if (data.errors) {
+    console.log({
+      event: "weaviate_error",
+      request_id: requestId,
+      timestamp: new Date().toISOString(),
+      errors: data.errors.map(e => e.message)
+    });
     throw new Error(`Weaviate error: ${data.errors.map(e => e.message).join(', ')}`);
   }
 
   const documents = data.data?.Get?.Document || [];
+  console.log({
+    event: "weaviate_search_complete",
+    request_id: requestId,
+    timestamp: new Date().toISOString(),
+    documents_returned: documents.length
+  });
+
   return documents.map(doc => ({
     filename: doc.filename,
     filepath: doc.filepath,
@@ -137,7 +248,15 @@ async function searchWeaviate(query, limit, env) {
   }));
 }
 
-async function generateAnswer(question, documents, controller, env) {
+async function generateAnswer(question, documents, controller, env, requestId) {
+  console.log({
+    event: "ai_generation_start",
+    request_id: requestId,
+    timestamp: new Date().toISOString(),
+    context_docs: documents.length,
+    context_size: documents.reduce((sum, doc) => sum + doc.content.length, 0)
+  });
+
   // Prepare context in XML format
   const context = documents.map(doc =>
     `<document filename="${doc.filename}" filepath="${doc.filepath}">
@@ -145,7 +264,9 @@ ${doc.content}
 </document>`
   ).join('\n\n');
 
-  const systemPrompt = `You are a helpful assistant answering questions about an academic program. Use the provided documents to answer the user's question accurately and concisely.
+  const currentDate = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
+  
+  const systemPrompt = `You are a helpful assistant answering questions about an academic program. Today's date is ${currentDate}. Use the provided documents to answer the user's question accurately and concisely.
 
 <documents>
 ${context}
@@ -170,12 +291,21 @@ Please provide a clear, helpful answer based on the information in the documents
   });
 
   if (!response.ok) {
+    console.log({
+      event: "openai_error",
+      request_id: requestId,
+      timestamp: new Date().toISOString(),
+      status: response.status,
+      status_text: response.statusText
+    });
     throw new Error(`OpenAI API error: ${response.status}`);
   }
 
   const reader = response.body.getReader();
   const decoder = new TextDecoder();
   let buffer = ''; // Buffer for incomplete lines
+  let tokensGenerated = 0;
+  let fullResponse = ''; // Collect complete response
 
   try {
     while (true) {
@@ -200,6 +330,8 @@ Please provide a clear, helpful answer based on the information in the documents
             const content = parsed.choices?.[0]?.delta?.content;
 
             if (content) {
+              tokensGenerated++;
+              fullResponse += content; // Collect response
               // Create OpenAI-style chunk with our custom content marked as answer chunk
               const answerChunk = {
                 id: parsed.id,
@@ -218,7 +350,13 @@ Please provide a clear, helpful answer based on the information in the documents
             }
           } catch (e) {
             // Skip invalid JSON lines
-            console.error('JSON parse error:', e, 'Data:', data);
+            console.log({
+              event: "json_parse_error",
+              request_id: requestId,
+              timestamp: new Date().toISOString(),
+              error: e.message,
+              data: data.substring(0, 100)
+            });
           }
         }
       }
@@ -235,6 +373,8 @@ Please provide a clear, helpful answer based on the information in the documents
             const content = parsed.choices?.[0]?.delta?.content;
 
             if (content) {
+              tokensGenerated++;
+              fullResponse += content; // Collect response
               const answerChunk = {
                 id: parsed.id,
                 object: "chat.completion.chunk",
@@ -251,11 +391,40 @@ Please provide a clear, helpful answer based on the information in the documents
               controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify(answerChunk)}\n\n`));
             }
           } catch (e) {
-            console.error('Final buffer JSON parse error:', e);
+            console.log({
+              event: "final_buffer_parse_error",
+              request_id: requestId,
+              timestamp: new Date().toISOString(),
+              error: e.message
+            });
           }
         }
       }
     }
+
+    console.log({
+      event: "ai_generation_complete",
+      request_id: requestId,
+      timestamp: new Date().toISOString(),
+      tokens_generated: tokensGenerated,
+      response_preview: fullResponse.substring(0, 1000) + (fullResponse.length > 1000 ? '...' : ''),
+      response_length: fullResponse.length
+    });
+
+    // Log the complete conversation for analysis
+    console.log({
+      event: "conversation_complete",
+      request_id: requestId,
+      timestamp: new Date().toISOString(),
+      question: question,
+      response_preview: fullResponse.substring(0, 1000) + (fullResponse.length > 1000 ? '...' : ''),
+      response_length: fullResponse.length,
+      full_response: fullResponse,
+      sources_used: documents.map(doc => doc.filename)
+    });
+
+    return fullResponse; // Return the collected response
+
   } finally {
     reader.releaseLock();
   }

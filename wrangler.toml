@@ -3,6 +3,10 @@ main = "cloudflare-worker.js"
 compatibility_date = "2025-07-28"
 compatibility_flags = ["nodejs_compat"]
 
+[observability]
+enabled = true
+head_sampling_rate = 1
+
 [vars]
 # Add any non-secret environment variables here if needed
 
