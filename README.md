@@ -369,6 +369,16 @@ The frontend requires both API keys because:
 
 **Test the iframe integration**: Open `iframe-test.html` to see how it looks embedded.
 
+### 🤖 **Embeddable Q&A Chatbot**
+
+Host `qa-interface.html` on your site and embed it using:
+
+```html
+<iframe src="qa-interface.html" width="400" height="400" style="border:0" title="IITM Q&A"></iframe>
+```
+
+See `index.html` for a live example and additional guidance.
+
 ### 🛠️ **JavaScript API**
 
 You can also use the JavaScript client directly:
