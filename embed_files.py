@@ -154,25 +154,38 @@ class DocumentEmbedder:
                     # Prepare document data
                     doc_data = self.prepare_document_data(file_path)
                     
-                    # Check if document already exists (by content hash)
+                    # Check if document already exists (by filepath)
                     from weaviate.classes.query import Filter
                     existing = collection.query.fetch_objects(
-                        filters=Filter.by_property("content_hash").equal(doc_data["content_hash"]),
+                        filters=Filter.by_property("filepath").equal(doc_data["filepath"]),
                         limit=1
                     )
                     
                     if existing.objects:
-                        logger.info(f"Document {file_path.name} already exists (same content hash), skipping...")
-                        continue
-                    
-                    # Insert document into Weaviate
-                    result = collection.data.insert(doc_data)
+                        # Document exists, check if content changed
+                        existing_doc = existing.objects[0]
+                        if existing_doc.properties["content_hash"] == doc_data["content_hash"]:
+                            logger.info(f"Document {file_path.name} unchanged (same content hash), skipping...")
+                            continue
+                        else:
+                            # Content changed, update existing document
+                            logger.info(f"Document {file_path.name} content changed, updating...")
+                            result = collection.data.update(
+                                uuid=existing_doc.uuid,
+                                properties=doc_data
+                            )
+                    else:
+                        # Document doesn't exist, insert new one
+                        logger.info(f"New document {file_path.name}, inserting...")
+                        result = collection.data.insert(doc_data)
                     
                     if result:
-                        logger.info(f"Successfully embedded {file_path.name}")
+                        action = "updated" if existing.objects else "inserted"
+                        logger.info(f"Successfully {action} {file_path.name}")
                         successful_embeds += 1
                     else:
-                        logger.error(f"Failed to embed {file_path.name}")
+                        action = "update" if existing.objects else "insert"
+                        logger.error(f"Failed to {action} {file_path.name}")
                         failed_embeds += 1
                         
                 except Exception as e:
