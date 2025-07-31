@@ -192,6 +192,7 @@ ${doc.content}
 ${context}
 </documents>
 
+When user's intent is unclear, infer, clearly state the assumption, and then respond accordingly.
 Please provide a clear, helpful answer based on the information in the documents above. Respond in markdown format.`;
 
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
