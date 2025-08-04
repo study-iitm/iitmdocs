@@ -389,10 +389,7 @@ Open the `index.html` file in your browser to see a live demonstration of the ch
 
 **How to Embed:**
 
-To add the chatbot to your website, include the following two files in your HTML:
-
-1.  **`chatbot.css`**: Add this stylesheet to the `<head>` of your HTML file.
-2.  **`chatbot.js`**: Add this script to the end of the `<body>` of your HTML file.
+To add the chatbot to your website, simply include the `chatbot.js` script at the end of your HTML `<body>`. The script will handle everything, including adding the necessary styles.
 
 **Example:**
 
@@ -403,7 +400,6 @@ To add the chatbot to your website, include the following two files in your HTML
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Website</title>
-    <link rel="stylesheet" href="path/to/chatbot.css">
 </head>
 <body>
     <!-- Your website content -->
@@ -413,7 +409,7 @@ To add the chatbot to your website, include the following two files in your HTML
 </html>
 ```
 
-The `chatbot.js` script will automatically create the chatbot button and iframe, and `chatbot.css` will style it. The chatbot is configured to load the `qa-interface.html` in the iframe.
+The `chatbot.js` script will automatically create the chatbot button, the iframe, and inject all the necessary CSS for styling. The chatbot is configured to load the `qa-interface.html` in the iframe.
 
 ### 🛠️ **JavaScript API**
 
