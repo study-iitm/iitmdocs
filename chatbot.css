@@ -58,7 +58,7 @@ body.show-chatbot .chatbot {
 }
 
 .chatbot header {
-    padding: 16px 0;
+    padding: 8px 0;
     position: relative;
     text-align: center;
     color: #fff;
@@ -80,9 +80,9 @@ header h2 {
 }
 
 .chatbot .chatbox {
-    overflow-y: auto;
+    overflow-y: hidden;
     height: 510px;
-    padding: 30px 20px 100px;
+    padding: 0;
 }
 
 .chatbot :where(.chatbox, textarea)::-webkit-scrollbar {
@@ -199,7 +199,7 @@ header h2 {
 
     .chatbot .chatbox {
         height: 90%;
-        padding: 25px 15px 100px;
+        padding: 0;
     }
 
     .chatbot .chat-input {
