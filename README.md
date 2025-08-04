@@ -379,6 +379,42 @@ Host `qa-interface.html` on your site and embed it using:
 
 See `index.html` for a live example and additional guidance.
 
+### 🤖 **Embeddable Chatbot**
+
+A collapsible chatbot is available and can be easily embedded into any webpage.
+
+**Live Demo:**
+
+Open the `index.html` file in your browser to see a live demonstration of the chatbot.
+
+**How to Embed:**
+
+To add the chatbot to your website, include the following two files in your HTML:
+
+1.  **`chatbot.css`**: Add this stylesheet to the `<head>` of your HTML file.
+2.  **`chatbot.js`**: Add this script to the end of the `<body>` of your HTML file.
+
+**Example:**
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Website</title>
+    <link rel="stylesheet" href="path/to/chatbot.css">
+</head>
+<body>
+    <!-- Your website content -->
+
+    <script src="path/to/chatbot.js"></script>
+</body>
+</html>
+```
+
+The `chatbot.js` script will automatically create the chatbot button and iframe, and `chatbot.css` will style it. The chatbot is configured to load the `qa-interface.html` in the iframe.
+
 ### 🛠️ **JavaScript API**
 
 You can also use the JavaScript client directly:
