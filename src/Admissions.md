@@ -159,14 +159,7 @@ For candidates who are yet to appear for class 12 board exams, the Qualifier Exa
 Though everyone who passes the Qualifier Exam will be allowed to
 register for Foundation Level, there will be limitations on the
 number of courses a learner will be allowed to register for in their
-first term based on the Average Qualifier Exam Score (M).
-
-|  |  |
-| --- | --- |
-| **Average Qualifier Exam Score (M)** | **Number of courses allowed to register for** |
-| Minimum required <= M < 50% | up to 2 courses |
-| 50% <= M < 70% | up to 3 courses |
-| M >= 70% | up to 4 courses |
+first term.
 
 **Re-attempt Qualifier Exam (regular entry)**
 
