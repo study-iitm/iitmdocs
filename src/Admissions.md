@@ -179,7 +179,7 @@ JEE-based Entry
 
 Candidates qualified to appear for current year's JEE Advanced can directly join our program by following the steps below:
 
-Complete the application form found [here](https://ds.study.iitm.ac.in/auth/login?apply_qualifier=kdsjfkls). Pay the admission fee of Rs 3000/-
+Complete the application form found [here](https://ds.study.iitm.ac.in/auth/login?apply_qualifier=). Pay the admission fee of Rs 3000/-
 
 Once we verify your proof for JEE advanced, you are eligible to directly start the foundation level courses.
 
